@@ -1,0 +1,85 @@
+\documentclass[UTF8]{ctexart}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{算法分析与设计第一次作业}
+\author{57119134 黄浩}
+\date{\today}
+\begin{document}
+\maketitle
+1.证明:$O(f) + O(g) = O(f + g)$
+
+\qquad 设$F(N) = O(f),G(N) = O(g)$
+
+\qquad 则$\exists C_1,C_2,N_1,N_2 \in N^*$
+
+\qquad 对$\forall N > N_1$,都有$F(N) \le C_1f(N)$
+
+\qquad \quad $\forall N > N_2$,都有$G(N) \le C_2g(N)$
+
+\qquad  $\because O(f) + O(g) = F(N) + G(N)$
+
+\qquad \quad 且$F(N) + G(N) \le C_1f(N) + C_2g(N)$
+
+\qquad  $\therefore$ 取$C_3 = max\{C_1, C_2\}, N_3 = max\{N_1, N_2\}$
+
+\qquad \quad 则对 $\forall N > N_3$,都有$O(f) + O(g) \le C_3f(N) + C_3g(N)$
+
+\qquad $\because  C_3f(N) + C_3g(N) = O(f + g)$
+
+\qquad $\therefore O(f) + O(g) = O(f + g)$
+
+2.证明:$O(f) \cdot O(g) = O(f \cdot g)$
+
+\qquad 设$F(N) = O(f),G(N) = O(g)$
+
+\qquad 则$\exists C_1,C_2,N_1,N_2 \in N^*$
+
+\qquad 对$\forall N > N_1$,都有$F(N) \le C_1f(N)$
+
+\qquad \quad $\forall N > N_2$,都有$G(N) \le C_2g(N)$
+
+\qquad  $\because O(f) \cdot O(g) = F(N) \cdot G(N)$
+
+\qquad \quad 且$F(N) \cdot G(N) \le C_1f(N) \cdot C_2g(N)$
+
+\qquad  $\therefore$ 取$C_3 = C_1 \cdot C_2, N_3 = max\{N_1, N_2\}$
+
+\qquad \quad 则对 $\forall N > N_3$,都有$O(f) \cdot O(g) \le C_3f(N) \cdot g(N)$
+
+\qquad $\because  C_3f(N) \cdot g(N) = O(f \cdot g)$
+
+\qquad $\therefore O(f) \cdot O(g) = O(f \cdot g)$
+
+3.证明:如果$g(N) = O(f(N))\Rightarrow O(f) + O(g) = O(f)$:
+
+\qquad 设$F(N) = O(f),G(N) = O(g)$
+
+\qquad 则$\exists C_1, C_2, N_1, N_2 \in N^*$
+
+\qquad 对$\forall N > N_1$,都有$F(N) \le C_1f(N)$
+
+\qquad \quad $\forall N > N_2$,都有$G(N) \le C_2g(N)$
+
+\qquad $\because g(N) = O(f(N))$
+
+\qquad $\therefore \exists C_3, N_3 \in N^*$
+
+\qquad \quad 对$\forall N > N_3,$都有$g(N) \le C_3f(N)$
+
+\qquad $\therefore$取$N_4 = max\{N_1, N_3\}$
+
+\qquad \quad 对$\forall N > N_4$,有$G(N) \le C_2 \cdot C_3f(N)$
+
+\qquad $\therefore$对$\forall N > max\{N_1, N_4\}$ 
+
+\qquad \quad 都有 $O(f) + O(g) \le C_1f(N) + C_2 \cdot C_3f(N) = (C_1 + C_2 + C_3)f(N)$
+
+\qquad $\because (C_1 + C_2 + C_3)f(N) = O(f)$
+
+\qquad $\therefore O(f) + O(g) = O(f)$
+
+\qquad 得证。
+
+\end{document}
