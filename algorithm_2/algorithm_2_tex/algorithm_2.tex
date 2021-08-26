@@ -1,0 +1,170 @@
+\documentclass[UTF8]{ctexart}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\renewcommand{\thealgorithm}{}
+
+\title{算法分析与设计第二次作业}
+\author{57119134 黄浩}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{题目一}
+
+求下列递推关系表示的算法复杂度
+
+\subsection{$T(n) = 9T(n / 3) + n$}
+
+\noindent 解:
+
+$\because n^{log_39} = n^2 > n$
+
+$\therefore$ 根据主方法结论,算法复杂度为:$O(n^2)$
+
+\subsection{$T(n) = n + 3T(n / 4)$}
+
+\noindent 解:
+$\because n^{log_43} < n$
+
+$\therefore$ 根据主方法结论,算法复杂度为:$O(n)$
+
+\subsection{$T(n) = 4T(n / 2) + n^2lgn$}
+
+\noindent 解:
+
+由于$ n^{log_24} = n^2$且$n^2$没有在多项式意义上大于或者小于$n^2lgn$
+
+所以我们根据递归展开进行计算:
+
+$\because$总共会递归$log_2n$层
+
+$\therefore$最后一层叶子节点的计算复杂度为:
+
+$$4^{log_2n} = n^2 \eqno[1]$$
+
+$\because$第 x 层的计算复杂度为$4^x(\frac{n}{2^x})^2lg{\frac{n}{2^x}} = n^2lg\frac{n}{2^x}$
+
+$\therefore$第一层到最后一层的累加复杂度为：
+
+$$\sum_{i = 0}^{log_2n - 1}n^2lg\frac{n}{2^i} = n^2lg\frac{n^{log_2n}}{2^{\sum_1^{log_2n - 1}i}} = n^2lg\frac{n^{log_2n}}{2^{\frac{log_2n(log_2n - 1)}{2}}} = n^2lg\frac{n^{log_2n}}{n^{\frac{log_2n - 1}{2}}}\eqno[2]$$
+
+综上所述，算法总复杂度为$[1] + [2]$：
+
+$$
+n^2 +  n^2lg\frac{n^{log_2n}}{n^{\frac{log_2n - 1}{2}}} = O(n^2)
+$$
+
+
+
+\quad 
+
+\section{题目二}
+
+假设谷歌公司在过去n天中的股票价格记录在数组A[1..n]中，我们希望从中找出两天的价格，其价格增幅最大，即找到A[i]和A[j] ($i \le j$) 使得M = A[j] − A[i]的值最大，请设计一个时间复杂度不超过O(n lg n)的分治算法
+
+\noindent 答：
+
+我设计了int stockMaximum(A[l..r], int\& min, int\& max, int\& ans)算法用于在l到r段上进行计算，其中min存储这一段的最小值，max存储这一段的最大值，ans存储题目在这一段上的答案。算法伪代码如下：
+
+\begin{algorithm}[h]
+  \caption{stockMaximum}
+  \begin{algorithmic}[1]
+  \IF{$l == r$}
+  \STATE $min = A[l], max = A[l], ans = 0$
+  \ELSE
+  \STATE $mid = (l + r) / 2$
+  \STATE $stockMaximum(A[l..mid], lmin, lmax, lans)$//计算左边的情况
+  \STATE $stockMaximum(A[mid + 1..r], rmin, rmax, rans)$//计算右边的情况
+  \STATE $min = Min(lmin, rmin)$//Min表示求最小值
+  \STATE $max = Max(lmax, rmax)$//Max表示求最大值
+  \STATE $ans = Max(lans, rans, rmax - lmin)$
+  \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+上述算法通过分治将问题分成三种情况：
+
+1. 最优买卖解完全发生在数组左边$\rightarrow$直接递归
+
+2. 最优买卖解完全发生在数组右边$\rightarrow$直接递归
+
+3. 最优买卖解中的买行为发生在数组左边，卖行为发生在数组右边$\rightarrow$用右边最大值减去左边最小值
+
+我们可以通过主方法求得上述算法的复杂度：
+
+$T(n) = 2T(n/2) + O(1)$
+
+$\because n^{log_22} = n > 1$
+
+$\therefore$ 根据主方法结论,算法复杂度为:$O(n)$
+
+所以我们达到了题目要求。
+
+\section{题目三}
+
+问题描述：在与联盟的战斗中连续失败后，帝国撤退到最后一个据点。根据其强大的防御系统，帝国击退了联盟攻击的六波浪潮。经过几个不眠之夜，联盟将军亚瑟注意到防御系统的唯一弱点就是能源供应。该系统由N个核电站供电，其中任何一个都会使系统失效。
+
+这位将军很快就派N名特工进行突击，这些特工进入了据点。不幸的是，由于帝国空军的袭击，他们未能降落在预期位置。作为一名经验丰富的将军，亚瑟很快意识到他需要重新安排计划。他现在要知道的第一件事是哪个特工离任何一个核电站最近。你是否可以帮助将军计算特工与核电站之间的最小距离？
+
+\noindent 答：
+
+首先我设计了一个struct用于存储题目中的所有节点，其中除了x、y坐标信息外还有一个表示节点是核电站坐标还是特工坐标的一个flag信息；接着我设计了shortestDistance(int left, int right, Node[1..2N], int\&ans)算法用于进行某一区间内特工与核电站之间的最小距离的计算，其中left存储这一区间的左边界(Node的下标)，right存储这一区间的右边界(Node的下标)，Node存储已经根据x坐标优先排好序的描述所有核电站和特工信息的struct，ans存储题目在这一区间上的答案。算法伪代码在最后一页(注意在一开始已经对Node进行了预处理，即默认Node已经是按照x坐标优先的规则进行了排序)
+
+\begin{algorithm}[h]
+  \caption{shortestDistance}
+  \begin{algorithmic}[1]
+  \IF{$l == r$}
+  \STATE $ans = INT\_MAX$//使用INT\_MAX表示无穷大值
+  \ELSE
+  \STATE $mid = (l + r) / 2$
+  \STATE $shortestDistance(left, mid, Node, lans)$//计算左边的情况
+  \STATE $shortestDistance(mid + 1, right, Node, rans)$//计算右边的情况
+  \STATE $d = Min(lans, rans)$//Min表示求最小值
+  \FOR {i = left to right}
+    \IF{$abs(Node[i].x - Node[mid].x) < d$}
+	  \IF{$abs(Node[i].y - Node[mid].y) < d$}
+      \STATE $midNode.push\_back(Node[i])$
+
+	  //与mid节点横纵坐标之差都小于d的点放入midNode中
+	  \ENDIF
+	\ENDIF
+  \ENDFOR
+  \FOR {i = 0 to midNode.size()}
+	\FOR {j = i + 1 to midNode.size()}
+	  \IF{$midNode[i].flag \neq midNode[j].flag$}
+	  \STATE $d = Min(d, dis(midNode[i], midNode[j]))$//dis计算两点距离
+	  \ENDIF
+	\ENDFOR
+  \ENDFOR
+  \STATE $ans = d$//相当于返回答案
+  \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+我们的算法通过分治将问题分成三种情况：
+
+1. 最近两点(flag不同)在数组左边$\rightarrow$直接递归
+
+2. 最近两点(flag不同)在数组右边$\rightarrow$直接递归
+
+3. 最近两点(flag不同)一点在mid左侧(包含mid)一点在mid右侧$\rightarrow$直接计算横纵坐标之差都小于d的此两点距离
+
+算法复杂度计算如下：
+
+预处理排序复杂度为$O(nlgn)$
+
+分治递归式：$T(n) = 2T(n/2) + O(n)$
+
+$\because n^{log_22} = n == n$
+
+$\therefore$ 根据主方法结论,算法复杂度为:$O(nlgn)$
+
+所以结合预处理和分治的复杂度，我的算法总复杂度为$O(nlgn)$。
+
+算法伪代码由于长度排版问题，安排在了最后一页(即下一页)。
+
+\end{document}
