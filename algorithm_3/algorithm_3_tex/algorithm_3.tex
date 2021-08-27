@@ -1,0 +1,109 @@
+\documentclass[UTF8]{ctexart}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\renewcommand{\thealgorithm}{}
+
+\title{算法分析与设计第三次作业}
+\author{57119134 黄浩}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{题目}
+
+n 个铁管具有重量，被按序存放在 w[i]，$1 \le i \le n$。这些铁管将根据它们的顺序，被焊接成一个大的铁管，每个时间任意两个相邻的铁管可以被选中来进行焊接。焊接的代价是焊接的铁管中的重量较大的铁管的重量。例如：w[1]=5，w[2]=1，w[3]=2，如果 1 和 2 先进行焊接，则焊接的代价为 5，然后 3被焊接代价为 6，那么总的焊接代价为 $5+6=11$。但是如果先焊接 2 和 3，再焊 1，那么总的代价为$2+5=7$。
+ 
+1）设计一个动态规划算法去发现最优的焊接顺序，使得整个代价最小和确立迭代关系。
+
+2）将设计的算法应用到一个具体的实例中，去发现最优焊接顺序和其相应的焊接总代价，该实例具有 5 个钢管，w[1]=6，w[2]=2，w[3]=7，w[4]=5，w[5]=8。请给出详细的解决过程。
+
+\noindent 解：
+
+1)
+
+我设计了bestWelding动态规划算法对题目进行求解。算法对重量进行了预先处理，并按照焊接次数从小到大进行迭代计算(即按照焊接1次、2次、3次等等的顺序进行计算)。对于从i到i + j段的最小开销计算过程为，遍历k从0到j - 1,分别求i到i + k段焊接i + k + 1到 i + j 段的代价，并取其中的最小值即为i到i + j段焊接的最小开销,与此同时记录下i到i + j段焊接的位置用于最终复原焊接过程。
+
+在此说明各个变量的意义以及一些简单的初始化。weight[i][j]表示从w[i]到w[j]的总重量，在计算之前weight元素全部初始化为0；dp[i][j]表示从w[i]焊接到w[j]的最小代价，在计算之前dp元素初始化为INT\_MAX(但是dp[m][m]元素初始化为0，即dp对角线上的元素初始化为0)；welding[i][j]表示从i到j段的焊接位置；所以最终dp[1][n]就是我们所求的从w[1]到w[n]的焊接最小代价，并且我们可以通过回溯welding层层寻找我们的焊接过程。
+
+伪代码如下：
+
+\begin{algorithm}[h]
+	\caption{bestWelding}
+	\begin{algorithmic}[1]
+	\STATE //计算各个区间的重量
+	\FOR {i = 1 to n}
+		\FOR {j = i to n}
+			\STATE $weight[i][j] = weight[i][j - 1] + w[j]$ //weight初始化为0
+		\ENDFOR
+	\ENDFOR
+	\STATE //动态规划计算
+	\STATE //j为区段差值，i为区段开始值，k为区段分割的位置
+	\FOR {j = 1 to n - 1}
+		\FOR {i = 1 to n - j}
+			\FOR {k = 0 to j - 1}
+				\STATE $w = max(weight[i][i + k], weight[i + k + 1][i + j])$ //两端更重值
+				\STATE $cost = dp[i][i + k] + dp[i + k + 1][i + j] + w$//焊接开销
+				\IF {$dp[i][i + j] > cost$}
+					\STATE $dp[i][i + j] = cost$
+					\STATE $welding[i][i + j] = i + k$//记录焊接位置
+				\ENDIF
+			\ENDFOR
+		\ENDFOR
+	\ENDFOR
+	\STATE return dp[1][n]
+	\end{algorithmic}
+\end{algorithm}
+
+2)
+
+模拟算法过程如下：(省去一些预处理计算过程)
+
+焊接1次：
+
+$dp[1][2] = 6;welding[1][2] = 1$
+
+$dp[2][3] = 7;welding[2][3] = 2$
+
+$dp[3][4] = 7;welding[3][4] = 3$
+
+$dp[4][5] = 8;welding[4][5] = 4$
+
+焊接2次：
+
+$dp[1][3] = min(14,16) = 14;welding[1][3] = 2$
+
+$dp[2][4] = min(16,19) = 16;welding[2][4] = 3$
+
+$dp[3][5] = min(19, 21) = 19;welding[3][5] = 4$
+
+焊接3次：
+
+$dp[1][4] = min(29,25,30) = 25;welding[1][4] = 2$
+
+$dp[2][5] = min(30,28,39) = 29;welding[2][5] = 3$
+
+焊接4次：
+
+$dp[1][5] = min(45,37,45,51) = 37;welding[1][5] = 3$
+
+所以我们回溯welding：
+
+$welding[1][5] = 3$
+
+\quad $welding[1][3] = 2$
+
+\qquad $welding[1][2] = 1;welding[2][3] = 2$
+
+\quad $welding[4][5] = 4$
+
+综上所述，我们焊接此w[1]到w[5]的最小开销为37。
+
+我们回溯的焊接过程为：
+
+1->2; 2->3; 4->5; 3->4
+
+\end{document}
